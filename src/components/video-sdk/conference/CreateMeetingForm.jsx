@@ -37,6 +37,7 @@ const CreateMeetingForm = () => {
     formState: { errors },
     reset,
     setValue,
+    clearErrors,
   } = useForm({
     defaultValues: {
       meeting_id: "",
@@ -92,8 +93,9 @@ const CreateMeetingForm = () => {
       : {
           ...data,
           meeting_link: "https://cloud.defcomm.ng/dashboard/conference/waiting",
-          group_user_id: selectedGroup?.group_id || "",
+          group_user_id: selectedGroup?.group_id || null,
           group_user: selectedGroup ? "group" : "user",
+          users: selectedUsers,
           startdatetime: formatDateTimeForBackend(data.startdatetime),
         };
 
@@ -185,11 +187,18 @@ const CreateMeetingForm = () => {
                   : "Select Users"}
               </button>
             </div>
+
+            {/* Conditional Validation: Group OR Users */}
             <input
               type="hidden"
-              {...register("group_user_id", { required: "Group is required" })}
-              value={selectedGroup?.group_id || ""}
+              {...register("group_user_id", {
+                validate: (value) => {
+                  if (value) return true; // group selected OR users marker set
+                  return "Group or Users is required";
+                },
+              })}
             />
+
             {errors.group_user_id && (
               <p className="text-red-500 mb-3">
                 {errors.group_user_id.message}
@@ -251,11 +260,15 @@ const CreateMeetingForm = () => {
         selectedGroup={selectedGroup}
         onSelectGroup={(group) => {
           setSelectedGroup(group);
-          setValue("group_user_id", group?.group_id, { shouldValidate: true });
+          setValue("group_user_id", group?.group_id, {
+            shouldValidate: true,
+          });
+          clearErrors("group_user_id");
         }}
         isOpen={isGroupModalOpen}
         onClose={() => setIsGroupModalOpen(false)}
       />
+
       {/* User Modal */}
       <Modal
         title="Select Users"
@@ -264,7 +277,11 @@ const CreateMeetingForm = () => {
       >
         <AddUsersToMeeting
           mode="data"
-          onSelectUsers={(users) => setSelectedUsers(users)}
+          onSelectUsers={(users) => {
+            setSelectedUsers(users);
+            setValue("group_user_id", "users", { shouldValidate: true });
+            clearErrors("group_user_id");
+          }}
           onClose={() => setIsUserModalOpen(false)}
         />
       </Modal>
