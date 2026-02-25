@@ -1,30 +1,29 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import axios from "axios";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { url } = req.query;
+  // Use PRIVATE env variables from Vercel Dashboard (no VITE_ prefix)
+  const REAL_BACKEND_URL = process.env.API_URL;
+  const BACKEND_SECRET = process.env.BACKEND_SECRET_KEY;
 
-  if (!url || typeof url !== 'string') {
-    return res.status(400).json({ error: 'Missing or invalid file URL' });
-  }
-
-  const fileUrl = decodeURIComponent(url); // Decode the URL properly
-  console.log("file url",fileUrl)
   try {
-    const response = await fetch(fileUrl);
+    // Forward the request from Vercel's server to your Backend
+    const response = await axios({
+      method: req.method,
+      // Combines your hidden URL with the specific endpoint path
+      url: `${REAL_BACKEND_URL}${req.url?.replace("/api/proxy", "")}`,
+      data: req.body,
+      headers: {
+        ...req.headers,
+        host: new URL(REAL_BACKEND_URL!).host,
+        "X-Internal-Secret": BACKEND_SECRET, // Hidden from the Network Tab!
+      },
+    });
 
-    if (!response.ok || !response.body) {
-      return res.status(response.status).json({ error: 'Failed to fetch document' });
-    }
-
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    res.setHeader('Content-Type', response.headers.get('content-type') || 'application/pdf');
-    response.body.pipe(res);
-  } catch (error) {
-    console.error('Proxy error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    res
+      .status(error.response?.status || 500)
+      .json(error.response?.data || "Proxy Error");
   }
 }
