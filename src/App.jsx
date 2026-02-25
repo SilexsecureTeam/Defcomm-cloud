@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthContext, AuthProvider } from "./context/AuthContext";
@@ -70,6 +71,7 @@ const App = () => {
                   draggable
                   className="z-[100000000000] mt-2"
                 />
+                <SpeedInsights />
               </DashboardContextProvider>
             </BotProvider>
           </ChatProvider>
