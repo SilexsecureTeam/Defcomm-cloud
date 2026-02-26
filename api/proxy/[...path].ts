@@ -20,9 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Preserve query string if present
   const queryString = req.url?.split("?")[1];
-  const targetUrl = queryString
-    ? `${REAL_BACKEND_URL}/${urlPath}?${queryString}`
-    : `${REAL_BACKEND_URL}/${urlPath}`;
+  const targetUrl = `${REAL_BACKEND_URL}/${urlPath}`;
 
   // Forward headers, but override host and add internal secret
   const headers: any = {
