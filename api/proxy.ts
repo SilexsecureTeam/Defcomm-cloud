@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import axios from "axios";
-import { extractErrorMessage } from "../src/utils/formmaters";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const REAL_BACKEND_URL = process.env.API_URL!;
@@ -18,7 +17,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       url: targetUrl,
       data: req.body,
       headers: {
-        ...req.headers,
+        Authorization: req.headers.authorization || "",
+        "Content-Type": req.headers["content-type"] || "application/json",
         "X-Api-Signature": BACKEND_SECRET,
       },
       timeout: 60000,
@@ -26,12 +26,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(response.status).json(response.data);
   } catch (err: any) {
-    return res
-      .status(err.response?.status || 500)
-      .json(
-        err.response?.data || {
-          error: extractErrorMessage(err) || "Proxy Error",
-        },
-      );
+    return res.status(err.response?.status || 500).json(
+      err.response?.data || {
+        error: err.message || "Proxy Error",
+      },
+    );
   }
 }
