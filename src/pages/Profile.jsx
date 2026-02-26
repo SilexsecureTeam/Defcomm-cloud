@@ -105,7 +105,7 @@ const Profile = () => {
       setAddress(user?.address || "");
       setEnable2FA(true);
       setPreviewImage(
-        user?.avatar ? `/api/proxy/image${user.avatar}` : ""
+        user?.avatar ? `/api/proxy/image/${user.avatar}` : ""
       );
     }
   }, [user]);
@@ -216,10 +216,10 @@ const Profile = () => {
                   <motion.input
                     type={field.type}
                     className={`w-full p-3 rounded-lg bg-transparent text-xl md:text-2xl font-bold focus:outline-none ${field.readOnly
-                        ? "cursor-not-allowed opacity-70"
-                        : isEditing
-                          ? "cursor-text"
-                          : "cursor-default"
+                      ? "cursor-not-allowed opacity-70"
+                      : isEditing
+                        ? "cursor-text"
+                        : "cursor-default"
                       }`}
                     value={field.value}
                     onChange={(e) => field.onChange?.(e.target.value)}

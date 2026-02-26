@@ -25,7 +25,7 @@ const ProfileDropdown = ({ user }) => {
           {/* Show user avatar if available, otherwise show MdAccountCircle icon */}
           {user?.avatar ? (
             <img
-              src={`${import.meta.env.VITE_BASE_URL}${user.avatar}`}
+              src={user?.avatar ? `/api/proxy/image/${user.avatar}` : ""}
               alt="User Avatar"
               className="w-8 h-8 rounded-full object-cover bg-gray-100"
             />
@@ -72,11 +72,10 @@ const ProfileDropdown = ({ user }) => {
               <button
                 disabled={isLoading?.logout}
                 onClick={() => logout("current")}
-                className={`w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-50 ${
-                  isLoading?.logout
-                    ? "opacity-50 cursor-not-allowed"
-                    : "text-gray-700"
-                }`}
+                className={`w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-50 ${isLoading?.logout
+                  ? "opacity-50 cursor-not-allowed"
+                  : "text-gray-700"
+                  }`}
               >
                 {isLoading?.logout ? (
                   <FaSpinner className="animate-spin" size={16} />
@@ -91,11 +90,10 @@ const ProfileDropdown = ({ user }) => {
               <button
                 disabled={isLoading?.logout}
                 onClick={() => logout("all")}
-                className={`w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-red-50 ${
-                  isLoading?.logout
-                    ? "opacity-50 cursor-not-allowed"
-                    : "text-red-600"
-                }`}
+                className={`w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-red-50 ${isLoading?.logout
+                  ? "opacity-50 cursor-not-allowed"
+                  : "text-red-600"
+                  }`}
               >
                 {isLoading?.logout ? (
                   <FaSpinner className="animate-spin" size={16} />
