@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import axios from "axios";
+import { extractErrorMessage } from "../src/utils/formmaters";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const REAL_BACKEND_URL = process.env.API_URL!;
@@ -27,6 +28,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err: any) {
     return res
       .status(err.response?.status || 500)
-      .json(err.response?.data || { error: "Proxy Error" });
+      .json(
+        err.response?.data || {
+          error: extractErrorMessage(err) || "Proxy Error",
+        },
+      );
   }
 }
