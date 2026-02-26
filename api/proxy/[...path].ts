@@ -25,7 +25,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Forward headers, but override host and add internal secret
   const headers: any = {
     ...req.headers,
-    host: new URL(REAL_BACKEND_URL).host,
     "X-Api-Signature": BACKEND_SECRET,
   };
 
