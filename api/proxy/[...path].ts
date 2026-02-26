@@ -5,21 +5,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const REAL_BACKEND_URL = process.env.API_URL!;
   const BACKEND_SECRET = process.env.BACKEND_SECRET_KEY!;
 
-  // Safely handle catch-all path
-  const pathParam = req.query.path;
-  let path: string;
-  if (Array.isArray(pathParam)) {
-    path = pathParam.join("/");
-  } else if (typeof pathParam === "string") {
-    path = pathParam;
-  } else {
-    return res.status(400).json({ error: "Missing path parameter" });
-  }
+  const path = req.url?.replace(/^\/api\/proxy\/?/, "");
+  if (!path) return res.status(400).json({ error: "Missing path parameter" });
+
+  // Forward query params if they exist
+  const queryString = req.url?.split("?")[1];
+  const targetUrl = queryString
+    ? `${REAL_BACKEND_URL}/${path}?${queryString}`
+    : `${REAL_BACKEND_URL}/${path}`;
 
   try {
     const response = await axios({
       method: req.method,
-      url: `${REAL_BACKEND_URL}/${path}`,
+      url: targetUrl,
       data: req.body,
       headers: {
         "X-Internal-Secret": BACKEND_SECRET,
