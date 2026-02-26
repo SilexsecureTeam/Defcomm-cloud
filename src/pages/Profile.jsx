@@ -105,7 +105,7 @@ const Profile = () => {
       setAddress(user?.address || "");
       setEnable2FA(true);
       setPreviewImage(
-        user?.avatar ? `${import.meta.env.VITE_BASE_URL}${user?.avatar}` : ""
+        user?.avatar ? `/api/proxy/image${user.avatar}` : ""
       );
     }
   }, [user]);
@@ -215,13 +215,12 @@ const Profile = () => {
                 >
                   <motion.input
                     type={field.type}
-                    className={`w-full p-3 rounded-lg bg-transparent text-xl md:text-2xl font-bold focus:outline-none ${
-                      field.readOnly
+                    className={`w-full p-3 rounded-lg bg-transparent text-xl md:text-2xl font-bold focus:outline-none ${field.readOnly
                         ? "cursor-not-allowed opacity-70"
                         : isEditing
-                        ? "cursor-text"
-                        : "cursor-default"
-                    }`}
+                          ? "cursor-text"
+                          : "cursor-default"
+                      }`}
                     value={field.value}
                     onChange={(e) => field.onChange?.(e.target.value)}
                     readOnly={field.name === "email" ? true : !isEditing}
@@ -313,7 +312,7 @@ const Profile = () => {
               <MdSecurity size={18} />
               Two-Factor Authentication (2FA)
             </label>
-            <ToggleSwitch isChecked={enable2FA} onToggle={() => {}} />
+            <ToggleSwitch isChecked={enable2FA} onToggle={() => { }} />
           </div>
 
           {/* Tooltip */}

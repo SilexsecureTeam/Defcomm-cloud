@@ -16,7 +16,7 @@ export const axiosClient = (
   const client = axios.create({
     // IMPORTANT: Point this to your Vercel /api folder
     // This hides your real backend URL from the Network Tab
-    baseURL: "/api/proxy",
+    baseURL: "/api/proxy/api",
     headers,
     timeout: 60000,
     withCredentials: false,
